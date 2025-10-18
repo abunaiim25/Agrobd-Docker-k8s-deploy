@@ -1,0 +1,7 @@
+resources:
+  - RBAC/
+  - agrobd-laravel-app/
+  - redis/
+  - jobs/
+  - network/
+  - database/
