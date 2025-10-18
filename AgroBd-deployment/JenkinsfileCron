@@ -1,0 +1,11 @@
+pipeline {
+  agent any
+  stages {
+    stage('Checkout') { steps { git url: 'https://github.com/abunaiim25/AgroBd-Laravel-Web' } }
+    stage('Deploy CronJobs') {
+      steps {
+        sh 'kubectl apply -f DEPLOYMENT/jobs/cronjob-schedule.yaml'
+      }
+    }
+  }
+}

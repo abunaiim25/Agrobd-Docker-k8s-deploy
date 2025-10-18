@@ -1,0 +1,84 @@
+apiVersion: apps/v1  # Kubernetes API version for Deployments
+kind: Deployment     # Resource type: Deployment
+metadata:
+  name: agrobd-laravel-app  # Name of the Deployment
+  labels:
+    app: agrobd-laravel-app  # Label to identify this Deployment
+spec:
+  replicas: 2  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: agrobd-laravel-app  # Pods must have this label to belong to this Deployment
+  template:
+    metadata:
+      labels:
+        app: agrobd-laravel-app  # Labels assigned to pods
+    spec:
+      serviceAccountName: laravel-sa  # ServiceAccount for RBAC permissions
+      containers:
+        - name: AgroBd  # Container name
+          image: mdnaiim/agrobd-image  # Docker image to use
+          imagePullPolicy: IfNotPresent  # Pull image only if not present locally
+          ports:
+            - containerPort: 9000  # Port exposed by container
+          env:  # Environment variables
+            - name: APP_ENV
+              value: production  # Set application environment
+            - name: APP_DEBUG
+              value: "false"  # Disable debug mode
+            - name: DB_CONNECTION
+              value: mysql  # Database connection type
+            - name: DB_HOST
+              value: mysql  # Database host service name
+            - name: DB_PORT
+              value: "3306"  # Database port
+            
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret  # Secret name
+                  key: database  # Key in secret for database name
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username  # Key in secret for DB username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password  # Key in secret for DB password
+            
+            - name: REDIS_HOST
+              value: redis  # Redis service host
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: redis-password  # Redis password from secret
+          
+          readinessProbe:  # Checks if the pod is ready to serve traffic
+            httpGet:
+              path: /health  # Endpoint to check
+              port: 9000
+            initialDelaySeconds: 10  # Wait before first check
+            periodSeconds: 10  # Frequency of checks
+          livenessProbe:  # Checks if the pod is alive; restart if not
+            httpGet:
+              path: /health
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:  # Resource requests and limits
+            requests:
+              cpu: "100m"  # Minimum CPU
+              memory: "256Mi"  # Minimum memory
+            limits:
+              cpu: "500m"  # Maximum CPU
+              memory: "512Mi"  # Maximum memory
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage  # Mount point inside container
+      volumes:
+        - name: storage
+          emptyDir: {}  # Temporary storage that is deleted with pod

@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    environment {
+        REGISTRY = "mdnaiim"                                         // Your Docker Hub account
+        IMAGE = "${REGISTRY}/agrobd-image"             // Full image path
+    }
+    
+    //Pulls project code from Git. Laravel project, Dockerfile, YAML all come here.
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/abunaiim25/AgroBd-Laravel-Web'                    // Laravel project repo
+            }
+        }
+
+        //This is essential because the image must be created before deploying to K8s.
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${IMAGE} .'                     // Build Docker image
+            }
+        }
+
+        //Push the image to Docker Hub so that K8s can pull it.
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-creds',       // Jenkins credentials ID
+                    usernameVariable: 'DOCKER_USER',     // pipeline variable for username
+                    passwordVariable: 'DOCKER_PASS')]) { // pipeline variable for password
+                    
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push ${IMAGE}'                        // Push to Docker Hub
+                }
+            }
+        }
+
+        //Deploy to Kubernetes cluster using kubectl and YAML files.
+        stage('Deploy Kubernetes') {
+            steps {
+                sh 'kubectl apply -f DEPLOYMENT/RBAC/'
+                sh 'kubectl apply -f DEPLOYMENT/database/'
+                sh 'kubectl apply -f DEPLOYMENT/redis/'
+                sh 'kubectl apply -f DEPLOYMENT/agrobd-laravel-app/'
+                sh 'kubectl apply -f DEPLOYMENT/custom-resource/'
+                sh 'kubectl apply -f DEPLOYMENT/jobs/'
+                sh 'kubectl apply -f DEPLOYMENT/network/'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ Pipeline failed!"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+apiVersion: v1                         # API version for core Kubernetes resources
+kind: ConfigMap                        # Declares this resource as a ConfigMap
+metadata:
+  name: redis-config                   # Name of the ConfigMap (used to reference it in pods)
+data:                                  # Key-value pairs storing configuration data
+  redis.conf: |                        # Key name (a file called redis.conf will be created)
+    maxmemory 256mb                    
+    maxmemory-policy allkeys-lru       
+
+# maxmemory 256mb                    # Limit Redis memory usage to 256 MB
+# maxmemory-policy allkeys-lru       # When memory is full, remove least recently used keys (LRU)
+

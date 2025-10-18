@@ -1,0 +1,40 @@
+# Job === One-time task — runs once and finishes.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-backup                        # Name of the Job
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure           # Restart container only if it fails
+      volumes:
+        - name: backup                   # Temporary volume to store backup files
+          emptyDir: {}                   # Ephemeral volume, deleted after pod ends
+      containers:
+        - name: db-backup                # Container name
+          image: mysql:8.0               # MySQL image used to run backup command
+          env:
+            - name: MYSQL_PWD            # MySQL password from secret
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_USER           # MySQL username from secret
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: MYSQL_DATABASE       # MySQL database name from secret
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: database
+          command:                       # Command to execute the backup
+            - sh
+            - -c
+            - |
+              mysqldump -h mysql -u "$MYSQL_USER" -p"$MYSQL_PWD" "$MYSQL_DATABASE" > /backup/backup-$(date +%F-%T).sql || true
+              # Runs mysqldump and saves backup with timestamp in /backup directory
+          volumeMounts:
+            - name: backup               # Mount the backup volume
+              mountPath: /backup         # Directory inside container where backup is stored

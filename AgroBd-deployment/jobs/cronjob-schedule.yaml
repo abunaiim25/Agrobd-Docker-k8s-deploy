@@ -1,0 +1,33 @@
+# CronJob === Scheduled Job — runs automatically on a schedule (like cron in Linux).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: laravel-schedule           # Name of the CronJob
+spec:
+  schedule: "*/5 * * * *"         # Cron schedule: runs every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: laravel-sa  # ServiceAccount for RBAC permissions
+          restartPolicy: OnFailure        # Restart job container only if it fails
+          containers:
+            - name: schedule-run           # Name of the container
+              image: mdnaiim/agrobd-image  # Docker image used
+              command: ["php", "artisan", "schedule:run"]        # Command executed inside the container
+              env:
+                - name: DB_HOST           # Database host
+                  value: mysql
+                - name: DB_DATABASE       # Database name from secret
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysql-secret
+                      key: database
+                - name: DB_USERNAME       # Database username from secret
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysql-secret
+                      key: username
+                - name: DB_PASSWORD       # Database password from secret
+                  valueFrom:
+                    secretKe

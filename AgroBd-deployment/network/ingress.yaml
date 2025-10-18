@@ -1,0 +1,19 @@
+# cluster এর বাইরে থেকে আসা requests কে ঠিক service/Pod এ পৌঁছায়
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: main-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: laravel.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: agrobd-laravel-app
+                port:
+                  number: 80

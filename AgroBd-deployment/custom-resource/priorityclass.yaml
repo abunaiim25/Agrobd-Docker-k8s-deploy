@@ -1,0 +1,15 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority        # Name of this PriorityClass
+value: 1000                  # Priority value; higher value = higher scheduling preference
+globalDefault: false         # If true, all pods without a priority class get this value
+description: "High priority class for critical pods"  # Explanation of what this priority class is for
+
+
+
+
+# Purpose:
+# যখন cluster এ resource (CPU, memory) কম থাকে এবং multiple Pods schedule করার চেষ্টা হয়।
+# Kubernetes scheduler Pod এর priority দেখে decide করে কোন Pod আগে schedule হবে।
+# High priority Pod low priority Pod এর চেয়ে আগে resource পাবে।

@@ -1,0 +1,43 @@
+# NetworkPolicy ঠিক করে দেয় কোন pod কার সাথে কথা বলতে পারবে, আর কার সাথে পারবে না।
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-app-traffic                        # Name of the NetworkPolicy
+spec:
+  podSelector:
+    matchLabels:
+      app: agrobd-laravel-app                    # Apply policy to pods with this label
+  policyTypes:
+    - Ingress                                    # Controls incoming traffic to selected pods
+  ingress:
+    - from:                                      # Define which pods are allowed to connect
+        - podSelector:
+            matchLabels:
+              app: mysql                         # Allow traffic from pods labeled 'mysql'
+        - podSelector:
+            matchLabels:
+              app: redis                         # Allow traffic from pods labeled 'redis'
+      ports:                                     # Specify allowed ports and protocols
+        - protocol: TCP
+          port: 3306                             # Allow MySQL traffic (port 3306)
+        - protocol: TCP
+          port: 6379                             # Allow Redis traffic (port 6379)
+
+
+
+# 🔍 এই YAML-এর কাজ:
+# এই পলিসি-তে বলা আছে —
+# app: agrobd-laravel-app লেবেল-ওয়ালা pod-গুলো শুধু নিচের pod-গুলোর থেকে ট্রাফিক নিতে পারবে ⬇️
+# app: mysql
+# app: redis
+# এবং, সেই ট্রাফিক কেবল নিচের পোর্টগুলো দিয়ে আসতে পারবে:
+# TCP 3306 → (MySQL এর ডাটাবেজ কানেকশন)
+# TCP 6379 → (Redis cache কানেকশন)
+
+# 🧱 মানে এইটা use করার কারণ:
+# 🔒 সিকিউরিটি বাড়ায় —
+# যাতে Laravel app-এর pod-এ অন্য কোনো random pod বা সার্ভিস ঢুকতে না পারে।
+# 🚫 Unwanted network access বন্ধ করে —
+# মানে শুধুমাত্র প্রয়োজনীয় সার্ভিস (যেমন MySQL, Redis)-এর কানেকশনই অনুমোদন করে।
+# 🧩 Microservice isolation দেয় —
+# প্রতিটা সার্ভিস আলাদাভাবে চলে, কিন্তু শুধু trusted সার্ভিসগুলা পরস্পরের সাথে কথা বলে।

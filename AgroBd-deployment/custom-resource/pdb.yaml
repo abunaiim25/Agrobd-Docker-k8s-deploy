@@ -1,0 +1,12 @@
+# minAvailable: 2 → সবসময় অন্তত ২টা Pod চলবে।
+# maxUnavailable: 1 → একই সময়ে সর্বোচ্চ ১টা Pod down হতে পারবে।
+
+apiVersion: policy/v1       # Kubernetes API version for PDB
+kind: PodDisruptionBudget    # Resource type: Pod Disruption Budget
+metadata:
+  name: laravel-pdb          # Name of this PDB
+spec:
+  minAvailable: 1            # Minimum 1 pod must be available at all times
+  selector:
+    matchLabels:
+      app: agrobd-laravel-app   # Apply this PDB to pods with label app=agrobd-laravel-app

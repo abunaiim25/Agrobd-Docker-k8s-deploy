@@ -1,0 +1,37 @@
+# cluster এর বাইরে থেকে আসা requests কে ঠিক service/Pod এ পৌঁছায়
+apiVersion: networking.k8s.io/v1   # Kubernetes API version for Ingress
+kind: Ingress                      # Resource type is Ingress
+metadata:
+  name: laravel-ingress            # Name of this Ingress resource
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /   # Rewrite incoming path to "/" for backend service
+spec:
+  rules:                           # Define routing rules
+    - host: laravel.local          # Domain/host for this Ingress
+      http:
+        paths:                     # List of paths to route
+          - path: /                # Match all requests under "/"
+            pathType: Prefix       # Use prefix matching for the path
+            backend:               # Define backend service
+              service:
+                name: agrobd-laravel-app   # Name of the Service to route traffic to
+                port:
+                  number: 80               # Service port to send the traffic
+
+
+
+
+
+
+
+
+# এই Ingress জিনিসটা basically Kubernetes-এর gateway — যেটা বাইরের world থেকে (browser, client, etc.) traffic নিয়ে ক্লাস্টারের ভেতরের services এ পাঠায় 🌐
+# 🧠 সহজভাবে বললে:
+# Ingress হলো একটা "Traffic Router" বা "Load Balancer" যেটা:
+# বাইরের request (যেমন http://laravel.local) রিসিভ করে
+# তারপর সেটা সঠিক service এ পাঠায় (যেমন agrobd-laravel-app)
+
+# ⚙️ কেন ব্যবহার করা হয়:
+# ১️⃣ External Access Control:
+# 👉 Kubernetes-এর service গুলো normally internal থাকে।
+# Ingress ব্যবহার করলে, তুই external IP/host দিয়ে সেই service এ access দিতে পারিস।

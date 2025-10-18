@@ -1,0 +1,43 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: laravel-role
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "jobs", "cronjobs", "pods/log"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+
+
+
+
+# RBAC মানে 👉 Role-Based Access Control
+# এটা Kubernetes-এর একটা permission management system — যেটা নির্ধারণ করে কে কী করতে পারবে, কোন resource-এ access পাবে, আর কোনটায় পাবে না 🔐
+# 🧠 সহজভাবে বললে:
+# Kubernetes-এ অনেক resource থাকে — যেমন Pod, Deployment, Secret, ConfigMap ইত্যাদি।
+# এখন ধর, তুই চাইছিস:
+# একজন user যেন শুধু Pod দেখতে পারে 🧐
+# আরেকজন যেন Pod delete ও করতে পারে 💣
+# এই আলাদা আলাদা permission assign করতেই লাগে RBAC।
+
+
+# 🔹 apiGroups: [""]
+# এখানে ফাঁকা string ("") মানে হলো core API group —
+# যেমন pods, services, configmaps ইত্যাদি।
+# (যদি apps group লাগত, তাহলে হতো apiGroups: ["apps"] — উদাহরণ: deployments, replicasets।)
+
+# 🔹 resources
+# এগুলো হলো কোন resource-এর উপর permission দেওয়া হচ্ছে:
+# pods → Pod গুলো manage করতে পারবে
+# jobs → Job resource তৈরি/ডিলিট করতে পারবে
+# cronjobs → CronJob resource handle করতে পারবে
+# pods/log → Pod-এর log দেখতে পারবে
+
+# 🔹 verbs
+# এখানে নির্দিষ্ট action বা permission দেওয়া হয়েছে:
+# verb	মানে
+# get	একটা resource এর details দেখা
+# list	সব resource এর তালিকা দেখা
+# watch	resource change হলে observe করা
+# create	নতুন resource তৈরি করা
+# delete	resource ডিলিট করা
