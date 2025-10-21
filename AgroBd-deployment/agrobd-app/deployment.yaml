@@ -2,6 +2,7 @@ apiVersion: apps/v1  # Kubernetes API version for Deployments
 kind: Deployment     # Resource type: Deployment
 metadata:
   name: agrobd-laravel-app  # Name of the Deployment
+  namespace: agrobd-app
   labels:
     app: agrobd-laravel-app  # Label to identify this Deployment
 spec:
@@ -21,6 +22,7 @@ spec:
           imagePullPolicy: IfNotPresent  # Pull image only if not present locally
           ports:
             - containerPort: 9000  # Port exposed by container
+
           env:  # Environment variables
             - name: APP_ENV
               value: production  # Set application environment
@@ -32,7 +34,7 @@ spec:
               value: mysql  # Database host service name
             - name: DB_PORT
               value: "3306"  # Database port
-            
+
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -48,7 +50,7 @@ spec:
                 secretKeyRef:
                   name: mysql-secret
                   key: password  # Key in secret for DB password
-            
+
             - name: REDIS_HOST
               value: redis  # Redis service host
             - name: REDIS_PASSWORD
@@ -56,7 +58,7 @@ spec:
                 secretKeyRef:
                   name: redis-secret
                   key: redis-password  # Redis password from secret
-          
+
           readinessProbe:  # Checks if the pod is ready to serve traffic
             httpGet:
               path: /health  # Endpoint to check

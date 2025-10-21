@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1   # Kubernetes API version for Ingress
 kind: Ingress                      # Resource type is Ingress
 metadata:
   name: laravel-ingress            # Name of this Ingress resource
+  namespace: agrobd-app
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /   # Rewrite incoming path to "/" for backend service
 spec:
