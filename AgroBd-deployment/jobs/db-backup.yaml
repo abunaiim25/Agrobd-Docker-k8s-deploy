@@ -3,6 +3,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-backup                        # Name of the Job
+  namespace: agrobd-app
 spec:
   template:
     spec:

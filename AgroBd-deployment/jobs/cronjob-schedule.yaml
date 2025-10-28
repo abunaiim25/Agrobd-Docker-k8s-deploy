@@ -3,6 +3,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: laravel-schedule           # Name of the CronJob
+  namespace: agrobd-app
 spec:
   schedule: "*/5 * * * *"         # Cron schedule: runs every 5 minutes
   jobTemplate:

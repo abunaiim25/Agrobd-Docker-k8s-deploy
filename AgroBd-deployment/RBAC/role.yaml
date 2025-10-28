@@ -1,13 +1,26 @@
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+apiVersion: rbac.authorization.k8s.io/v1  # Kubernetes RBAC API version
+kind: Role  # This is a Role, defines permissions within a namespace
 metadata:
-  name: laravel-role
-  namespace: default
+  name: laravel-role  # Name of the Role
+  namespace: agrobd-app  # Namespace where this Role applies
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "jobs", "cronjobs", "pods/log"]
-    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]  # Core API group (pods, services, secrets, etc.)
+    resources: 
+      - "pods"       # Allows access to pods
+      - "jobs"       # Allows access to batch jobs
+      - "cronjobs"   # Allows access to scheduled jobs
+      - "pods/log"   # Allows access to pod logs
+    verbs: 
+      - "get"        # Can read a single resource
+      - "list"       # Can list all resources
+      - "watch"      # Can watch for changes
+      - "create"     # Can create new resources
+      - "delete"     # Can delete resources
 
+
+  # - apiGroups: ["apps"]         # apps group
+  #   resources: ["deployments"]  # deployment permission
+  #   verbs: ["create","delete"]
 
 
 
@@ -23,7 +36,7 @@ rules:
 
 # 🔹 apiGroups: [""]
 # এখানে ফাঁকা string ("") মানে হলো core API group —
-# যেমন pods, services, configmaps ইত্যাদি।
+# যেমন pods, services, configmaps ইত্যাদি। 
 # (যদি apps group লাগত, তাহলে হতো apiGroups: ["apps"] — উদাহরণ: deployments, replicasets।)
 
 # 🔹 resources

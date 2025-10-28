@@ -2,11 +2,11 @@ apiVersion: rbac.authorization.k8s.io/v1  # API version for RBAC (Role-Based Acc
 kind: RoleBinding                          # This manifest defines a RoleBinding resource
 metadata:
   name: laravel-rolebinding                # Name of the RoleBinding
-  namespace: default                       # Namespace where this binding applies
+  namespace: agrobd-app                        # Namespace where this binding applies
 subjects:                                  # Who (user/group/service account) will get the permissions
   - kind: ServiceAccount                   # Type of subject (here it's a ServiceAccount)
     name: laravel-sa                       # Name of the ServiceAccount to bind
-    namespace: default                     # Namespace of the ServiceAccount
+    namespace: agrobd-app                      # Namespace of the ServiceAccount
 roleRef:                                   # Reference to the Role being bound
   kind: Role                               # Kind of the referenced object (Role or ClusterRole)
   name: laravel-role                       # Name of the Role to bind

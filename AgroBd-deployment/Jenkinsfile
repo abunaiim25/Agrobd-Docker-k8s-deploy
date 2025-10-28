@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        REGISTRY = "mdnaiim"                                         // Your Docker Hub account
+        REGISTRY = "mdnaiim"                            // Your Docker Hub account
         IMAGE = "${REGISTRY}/agrobd-image"             // Full image path
     }
     
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-creds',       // Jenkins credentials ID
-                    usernameVariable: 'DOCKER_USER',     // pipeline variable for username
+                    usernameVariable: 'mdnaiim',     // pipeline variable for username
                     passwordVariable: 'DOCKER_PASS')]) { // pipeline variable for password
                     
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'

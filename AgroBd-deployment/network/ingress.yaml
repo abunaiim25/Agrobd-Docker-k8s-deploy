@@ -1,19 +1,22 @@
 # cluster এর বাইরে থেকে আসা requests কে ঠিক service/Pod এ পৌঁছায়
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+
+apiVersion: networking.k8s.io/v1  # Kubernetes API version for networking resources (Ingress)
+kind: Ingress                     # This is an Ingress resource
 metadata:
-  name: main-ingress
+  name: main-ingress               # Name of the Ingress
+  namespace: agrobd-app
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Tells Nginx Ingress to rewrite all matching paths to "/"
 spec:
-  rules:
-    - host: laravel.local
+  rules:                           # Rules define how requests are routed
+    - host: laravel.local          # Requests for this hostname
       http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
+        paths:                     # Define paths and backend services
+          - path: /                # Match all paths starting with "/" (Prefix match)
+            pathType: Prefix       # Path matching type (Prefix = all URLs starting with this path)
+            backend:               # Define the backend service to route traffic to
               service:
-                name: agrobd-laravel-app
+                name: agrobd-laravel-app  # Name of the Service to forward traffic
                 port:
-                  number: 80
+                  number: 80             # Port of the backend Service to forward traffic to
+

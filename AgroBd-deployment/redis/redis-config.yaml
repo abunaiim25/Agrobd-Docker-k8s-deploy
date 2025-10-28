@@ -7,6 +7,10 @@ data:                                  # Key-value pairs storing configuration d
     maxmemory 256mb                    
     maxmemory-policy allkeys-lru       
 
+
+
+
 # maxmemory 256mb                    # Limit Redis memory usage to 256 MB
 # maxmemory-policy allkeys-lru       # When memory is full, remove least recently used keys (LRU)
 
+# ConfigMap = configuration data / environment variables / non-sensitive info রাখতে পারো, যা container বা pod এর ভিতরে use করা যাবে।

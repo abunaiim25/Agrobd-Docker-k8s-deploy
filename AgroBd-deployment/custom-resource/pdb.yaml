@@ -5,6 +5,7 @@ apiVersion: policy/v1       # Kubernetes API version for PDB
 kind: PodDisruptionBudget    # Resource type: Pod Disruption Budget
 metadata:
   name: laravel-pdb          # Name of this PDB
+  namespace: agrobd-app
 spec:
   minAvailable: 1            # Minimum 1 pod must be available at all times
   selector:
